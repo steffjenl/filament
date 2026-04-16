@@ -416,3 +416,14 @@ if (! function_exists('Filament\Support\get_color_css_variables')) {
         return implode(';', $variables);
     }
 }
+
+if (! function_exists('Filament\Support\filament_csp_nonce')) {
+    /**
+     * Return the current Filament CSP nonce, or `null` when CSP is disabled
+     * or no nonce has been configured.
+     */
+    function filament_csp_nonce(): ?string
+    {
+        return \Filament\Support\Facades\FilamentCsp::getNonce();
+    }
+}

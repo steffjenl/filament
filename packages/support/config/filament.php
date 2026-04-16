@@ -117,4 +117,44 @@ return [
 
     'system_route_prefix' => 'filament',
 
+    /*
+    |--------------------------------------------------------------------------
+    | Content Security Policy (CSP)
+    |--------------------------------------------------------------------------
+    |
+    | When enabled, Filament will inject a nonce attribute onto every
+    | <script> and <style> tag that it renders, making it compatible with
+    | strict Content-Security-Policy headers that disallow `unsafe-inline`.
+    |
+    | nonce:
+    |   A static nonce string. Suitable for development or simple setups.
+    |   Not recommended for production — use `nonce_resolver` instead.
+    |
+    | nonce_resolver:
+    |   A callable, Closure, or container-binding string that returns a
+    |   per-request nonce. This is the recommended approach for production
+    |   because the nonce must change on every request.
+    |
+    |   Examples:
+    |     'nonce_resolver' => fn () => csp_nonce(),       // spatie/laravel-csp helper
+    |     'nonce_resolver' => App\Security\NonceProvider::class,
+    |
+    | script_attributes:
+    |   Additional HTML attributes merged onto every Filament <script> tag.
+    |   The nonce is added automatically; you do not need to list it here
+    |   unless you want to override the resolved nonce.
+    |
+    | style_attributes:
+    |   Additional HTML attributes merged onto every Filament <style> tag.
+    |
+    */
+
+    'csp' => [
+        'enabled' => false,
+        'nonce' => null,
+        'nonce_resolver' => null,
+        'script_attributes' => [],
+        'style_attributes' => [],
+    ],
+
 ];

@@ -4,6 +4,7 @@ namespace Filament\Support\Assets;
 
 use Filament\Support\Colors\ColorManager;
 use Filament\Support\Facades\FilamentColor;
+use Filament\Support\Facades\FilamentCsp;
 use Illuminate\Support\Arr;
 use LogicException;
 
@@ -188,8 +189,9 @@ class AssetManager
 
     /**
      * @param  array<string> | null  $packages
+     * @param  array<string, mixed>  $attributes
      */
-    public function renderScripts(?array $packages = null, bool $withCore = false): string
+    public function renderScripts(?array $packages = null, bool $withCore = false, array $attributes = []): string
     {
         /** @var array<Js> $assets */
         $assets = $this->getScripts($packages, $withCore);
@@ -201,9 +203,20 @@ class AssetManager
             );
         }
 
+        $scriptAttributes = FilamentCsp::isEnabled()
+            ? array_merge(FilamentCsp::getScriptAttributes(), $attributes)
+            : $attributes;
+
+        foreach ($assets as $asset) {
+            if (! empty($scriptAttributes)) {
+                $asset->mergeExtraAttributes($scriptAttributes);
+            }
+        }
+
         return view('filament::assets', [
             'assets' => $assets,
             'data' => $this->getScriptData($packages),
+            'scriptAttributes' => $scriptAttributes,
         ])->render();
     }
 
@@ -275,8 +288,9 @@ class AssetManager
 
     /**
      * @param  array<string> | null  $packages
+     * @param  array<string, mixed>  $attributes
      */
-    public function renderStyles(?array $packages = null): string
+    public function renderStyles(?array $packages = null, array $attributes = []): string
     {
         $cssVariables = $this->getCssVariables($packages);
         $customColors = [];
@@ -303,6 +317,9 @@ class AssetManager
             ],
             'cssVariables' => $cssVariables,
             'customColors' => $customColors,
+            'styleAttributes' => FilamentCsp::isEnabled()
+                ? array_merge(FilamentCsp::getStyleAttributes(), $attributes)
+                : $attributes,
         ])->render();
     }
 
