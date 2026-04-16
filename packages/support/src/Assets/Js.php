@@ -97,10 +97,20 @@ class Js extends Asset
      */
     public function extraAttributes(array $attributes): static
     {
-        // Security: Attribute values are not escaped when rendered. Never
-        // pass unsanitized user input as attribute names or values.
-
         $this->extraAttributes = $attributes;
+
+        return $this;
+    }
+
+    /**
+     * Merge default attributes under any existing per-asset attribute values.
+     * Keys already set via `extraAttributes()` are not overwritten.
+     *
+     * @param  array<string, mixed>  $defaults
+     */
+    public function mergeExtraAttributes(array $defaults): static
+    {
+        $this->extraAttributes = array_merge($defaults, $this->extraAttributes);
 
         return $this;
     }
@@ -150,13 +160,25 @@ class Js extends Asset
 
     public function getExtraAttributesHtml(): string
     {
-        $attributes = '';
+        $parts = [];
 
         foreach ($this->getExtraAttributes() as $key => $value) {
-            $attributes .= " {$key}=\"{$value}\"";
+            if ($value === false || $value === null) {
+                continue;
+            }
+
+            if ($value === true) {
+                $parts[] = htmlspecialchars((string) $key, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+                continue;
+            }
+
+            $escapedKey = htmlspecialchars((string) $key, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+            $escapedValue = htmlspecialchars((string) $value, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+
+            $parts[] = "{$escapedKey}=\"{$escapedValue}\"";
         }
 
-        return $attributes;
+        return implode(' ', $parts);
     }
 
     public function getSrc(): string

@@ -6,6 +6,7 @@ use BladeUI\Icons\Factory as BladeIconsFactory;
 use Composer\InstalledVersions;
 use Filament\Commands\CacheComponentsCommand;
 use Filament\Support\Assets\AssetManager;
+use Filament\Support\Assets\CspManager;
 use Filament\Support\Assets\Js;
 use Filament\Support\Colors\ColorManager;
 use Filament\Support\Commands\AboutCommand as FilamentAboutCommand;
@@ -69,6 +70,11 @@ class SupportServiceProvider extends PackageServiceProvider
         $this->app->scoped(
             AssetManager::class,
             fn () => new AssetManager,
+        );
+
+        $this->app->singleton(
+            CspManager::class,
+            fn () => new CspManager,
         );
 
         $this->app->singleton(

@@ -4,6 +4,7 @@
 
 @php
     $renderHookScopes = $livewire?->getRenderHookScopes();
+    $cspNonce = \Filament\Support\Facades\FilamentCsp::getNonce();
 @endphp
 
 <!DOCTYPE html>
@@ -39,7 +40,7 @@
 
         {{ \Filament\Support\Facades\FilamentView::renderHook(\Filament\View\PanelsRenderHook::STYLES_BEFORE, scopes: $renderHookScopes) }}
 
-        <style>
+        <style@if ($cspNonce) nonce="{{ $cspNonce }}"@endif>
             [x-cloak=''],
             [x-cloak='x-cloak'],
             [x-cloak='1'] {
@@ -73,7 +74,7 @@
         {{ filament()->getMonoFontHtml() }}
         {{ filament()->getSerifFontHtml() }}
 
-        <style>
+        <style@if ($cspNonce) nonce="{{ $cspNonce }}"@endif>
             :root {
                 --font-family: '{!! filament()->getFontFamily() !!}';
                 --mono-font-family: '{!! filament()->getMonoFontFamily() !!}';
@@ -93,15 +94,15 @@
         {{ \Filament\Support\Facades\FilamentView::renderHook(\Filament\View\PanelsRenderHook::STYLES_AFTER, scopes: $renderHookScopes) }}
 
         @if (! filament()->hasDarkMode())
-            <script>
+            <script@if ($cspNonce) nonce="{{ $cspNonce }}"@endif>
                 localStorage.setItem('theme', 'light')
             </script>
         @elseif (filament()->hasDarkModeForced())
-            <script>
+            <script@if ($cspNonce) nonce="{{ $cspNonce }}"@endif>
                 localStorage.setItem('theme', 'dark')
             </script>
         @else
-            <script>
+            <script@if ($cspNonce) nonce="{{ $cspNonce }}"@endif>
                 const loadDarkMode = () => {
                     window.theme = localStorage.getItem('theme') ?? @js(filament()->getDefaultThemeMode()->value)
 
@@ -145,7 +146,7 @@
         @filamentScripts(withCore: true)
 
         @if (filament()->hasBroadcasting() && config('filament.broadcasting.echo'))
-            <script data-navigate-once>
+            <script@if ($cspNonce) nonce="{{ $cspNonce }}"@endif data-navigate-once>
                 window.Echo = new window.EchoFactory(@js(config('filament.broadcasting.echo')))
 
                 window.dispatchEvent(new CustomEvent('EchoLoaded'))
@@ -153,7 +154,7 @@
         @endif
 
         @if (filament()->hasDarkMode() && (! filament()->hasDarkModeForced()))
-            <script>
+            <script@if ($cspNonce) nonce="{{ $cspNonce }}"@endif>
                 loadDarkMode()
             </script>
         @endif

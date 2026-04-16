@@ -294,3 +294,64 @@ describe('themes', function (): void {
         expect($themes['admin']->getPath())->toBe('/second.css');
     });
 });
+
+describe('CSP / `renderScripts()` with attributes', function (): void {
+    it('passes `$attributes` to the view when rendering scripts', function (): void {
+        $this->manager->register([
+            Js::make('app', 'https://cdn.example.com/app.js'),
+        ]);
+
+        $html = $this->manager->renderScripts(attributes: ['nonce' => 'test-nonce']);
+
+        expect($html)->toContain('nonce="test-nonce"');
+    });
+
+    it('auto-injects `CspManager` script attributes when CSP is enabled', function (): void {
+        config(['filament.csp.enabled' => true, 'filament.csp.nonce' => 'auto-nonce']);
+
+        // Flush cached nonce so the config change is picked up.
+        \Filament\Support\Facades\FilamentCsp::flushNonce();
+
+        $this->manager->register([
+            Js::make('app', 'https://cdn.example.com/app.js'),
+        ]);
+
+        $html = $this->manager->renderScripts();
+
+        expect($html)->toContain('nonce="auto-nonce"');
+    });
+
+    it('merges per-call attributes over `CspManager` defaults', function (): void {
+        config(['filament.csp.enabled' => true, 'filament.csp.nonce' => 'default-nonce']);
+
+        \Filament\Support\Facades\FilamentCsp::flushNonce();
+
+        $this->manager->register([
+            Js::make('app', 'https://cdn.example.com/app.js'),
+        ]);
+
+        // Per-call nonce should win because array_merge keeps the later key.
+        $html = $this->manager->renderScripts(attributes: ['nonce' => 'override-nonce']);
+
+        expect($html)->toContain('nonce="override-nonce"');
+        expect($html)->not->toContain('nonce="default-nonce"');
+    });
+});
+
+describe('CSP / `renderStyles()` with attributes', function (): void {
+    it('passes `$attributes` to the view when rendering styles', function (): void {
+        $html = $this->manager->renderStyles(attributes: ['nonce' => 'style-nonce']);
+
+        expect($html)->toContain('nonce="style-nonce"');
+    });
+
+    it('auto-injects `CspManager` style attributes when CSP is enabled', function (): void {
+        config(['filament.csp.enabled' => true, 'filament.csp.nonce' => 'style-auto-nonce']);
+
+        \Filament\Support\Facades\FilamentCsp::flushNonce();
+
+        $html = $this->manager->renderStyles();
+
+        expect($html)->toContain('nonce="style-auto-nonce"');
+    });
+});

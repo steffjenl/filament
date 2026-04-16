@@ -85,6 +85,68 @@ describe('extra attributes', function (): void {
     it('returns empty string for `getExtraAttributesHtml()` when no attributes', function (): void {
         expect(Js::make('script')->getExtraAttributesHtml())->toBe('');
     });
+
+    it('HTML-escapes attribute values in `getExtraAttributesHtml()`', function (): void {
+        $js = Js::make('script')
+            ->extraAttributes(['data-value' => '"<xss>"']);
+
+        $html = $js->getExtraAttributesHtml();
+
+        expect($html)->not->toContain('<xss>');
+        expect($html)->toContain('&lt;xss&gt;');
+        expect($html)->toContain('&quot;');
+    });
+
+    it('renders boolean `true` as a bare attribute name in `getExtraAttributesHtml()`', function (): void {
+        $html = Js::make('script')
+            ->extraAttributes(['async' => true])
+            ->getExtraAttributesHtml();
+
+        expect($html)->toBe('async');
+    });
+
+    it('omits `false` values from `getExtraAttributesHtml()`', function (): void {
+        $html = Js::make('script')
+            ->extraAttributes(['nonce' => 'abc', 'defer' => false])
+            ->getExtraAttributesHtml();
+
+        expect($html)->toContain('nonce="abc"');
+        expect($html)->not->toContain('defer');
+    });
+
+    it('omits `null` values from `getExtraAttributesHtml()`', function (): void {
+        $html = Js::make('script')
+            ->extraAttributes(['nonce' => 'abc', 'data-foo' => null])
+            ->getExtraAttributesHtml();
+
+        expect($html)->toContain('nonce="abc"');
+        expect($html)->not->toContain('data-foo');
+    });
+});
+
+describe('`mergeExtraAttributes()`', function (): void {
+    it('sets attributes when none exist', function (): void {
+        $js = Js::make('script')->mergeExtraAttributes(['nonce' => 'abc123']);
+
+        expect($js->getExtraAttributes())->toBe(['nonce' => 'abc123']);
+    });
+
+    it('does not overwrite existing per-asset attributes', function (): void {
+        $js = Js::make('script')
+            ->extraAttributes(['nonce' => 'per-asset'])
+            ->mergeExtraAttributes(['nonce' => 'default']);
+
+        expect($js->getExtraAttributes()['nonce'])->toBe('per-asset');
+    });
+
+    it('adds new keys from defaults that are not already set', function (): void {
+        $js = Js::make('script')
+            ->extraAttributes(['nonce' => 'per-asset'])
+            ->mergeExtraAttributes(['nonce' => 'default', 'crossorigin' => 'anonymous']);
+
+        expect($js->getExtraAttributes()['nonce'])->toBe('per-asset');
+        expect($js->getExtraAttributes()['crossorigin'])->toBe('anonymous');
+    });
 });
 
 describe('`getSrc()`', function (): void {

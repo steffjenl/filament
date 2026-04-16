@@ -1,5 +1,8 @@
 @if (isset($data))
-    <script>
+    @php
+        $__scriptAttrString = isset($scriptAttributes) ? \Filament\Support\Facades\FilamentCsp::renderAttributeString($scriptAttributes) : '';
+    @endphp
+    <script{!! filled($__scriptAttrString) ? ' ' . $__scriptAttrString : '' !!}>
         window.filamentData = @js($data)
     </script>
 @endif
@@ -10,7 +13,10 @@
     @endif
 @endforeach
 
-<style>
+@php
+    $__styleAttrString = isset($styleAttributes) ? \Filament\Support\Facades\FilamentCsp::renderAttributeString($styleAttributes) : '';
+@endphp
+<style{!! filled($__styleAttrString) ? ' ' . $__styleAttrString : '' !!}>
     :root {
         @foreach ($cssVariables ?? [] as $cssVariableName => $cssVariableValue) --{{ $cssVariableName }}:{{ $cssVariableValue }}; @endforeach
     }
