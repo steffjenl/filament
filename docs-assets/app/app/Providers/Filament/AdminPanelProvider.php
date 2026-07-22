@@ -11,6 +11,7 @@ use App\Filament\Widgets\DashboardOrdersChart;
 use App\Filament\Widgets\DashboardRevenueChart;
 use App\Filament\Widgets\DashboardStatsOverview;
 use App\Filament\Widgets\DashboardTableWidget;
+use App\Http\Middleware\AddContentSecurityPolicyHeader;
 use App\Http\Middleware\AutoLogin;
 use Filament\Auth\MultiFactor\App\AppAuthentication;
 use Filament\Auth\MultiFactor\Email\EmailAuthentication;
@@ -132,6 +133,7 @@ class AdminPanelProvider extends PanelProvider
                 SubstituteBindings::class,
                 DisableBladeIconComponents::class,
                 DispatchServingFilamentEvent::class,
+                AddContentSecurityPolicyHeader::class,
             ])
             ->authMiddleware([
                 AutoLogin::class,

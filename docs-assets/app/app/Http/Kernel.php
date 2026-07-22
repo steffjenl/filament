@@ -2,6 +2,7 @@
 
 namespace App\Http;
 
+use App\Http\Middleware\AddContentSecurityPolicyHeader;
 use App\Http\Middleware\Authenticate;
 use App\Http\Middleware\EncryptCookies;
 use App\Http\Middleware\PreventRequestsDuringMaintenance;
@@ -58,6 +59,7 @@ class Kernel extends HttpKernel
             ShareErrorsFromSession::class,
             VerifyCsrfToken::class,
             SubstituteBindings::class,
+            AddContentSecurityPolicyHeader::class,
         ],
 
         'api' => [

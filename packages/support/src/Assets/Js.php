@@ -125,6 +125,9 @@ class Js extends Asset
         $navigateOnce = ($hasSpaMode && $this->isNavigateOnce()) ? 'data-navigate-once' : '';
         $navigateTrack = $hasSpaMode ? 'data-navigate-track' : '';
 
+        $cspNonce = FilamentView::getCspNonce();
+        $cspNonceAttribute = filled($cspNonce) ? 'nonce="' . e($cspNonce) . '"' : '';
+
         return new HtmlString(
             "
             <script
@@ -135,6 +138,7 @@ class Js extends Asset
                 {$extraAttributesHtml}
                 {$navigateOnce}
                 {$navigateTrack}
+                {$cspNonceAttribute}
             ></script>
         ",
         );

@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Facade;
  * @method static bool hasSpaPrefetching()
  * @method static bool hasRenderHook(string $name, string | array<string> | null $scopes = null)
  * @method static Htmlable renderHook(string $name, string | array<string> | null $scopes = null, array<string, mixed> $data = [])
+ * @method static string|null getCspNonce()
  *
  * @see ViewManager
  */
@@ -46,6 +47,16 @@ class FilamentView extends Facade
     {
         static::resolved(function (ViewManager $viewManager) use ($exceptions): void {
             $viewManager->spaUrlExceptions($exceptions);
+        });
+    }
+
+    /**
+     * @param  string | (Closure(): ?string) | null  $nonce
+     */
+    public static function useCspNonce(string | Closure | null $nonce): void
+    {
+        static::resolved(function (ViewManager $viewManager) use ($nonce): void {
+            $viewManager->useCspNonce($nonce);
         });
     }
 }

@@ -93,15 +93,15 @@
         {{ \Filament\Support\Facades\FilamentView::renderHook(\Filament\View\PanelsRenderHook::STYLES_AFTER, scopes: $renderHookScopes) }}
 
         @if (! filament()->hasDarkMode())
-            <script>
+            <script nonce="{{ \Filament\Support\csp_nonce() }}">
                 localStorage.setItem('theme', 'light')
             </script>
         @elseif (filament()->hasDarkModeForced())
-            <script>
+            <script nonce="{{ \Filament\Support\csp_nonce() }}">
                 localStorage.setItem('theme', 'dark')
             </script>
         @else
-            <script>
+            <script nonce="{{ \Filament\Support\csp_nonce() }}">
                 const loadDarkMode = () => {
                     window.theme = localStorage.getItem('theme') ?? @js(filament()->getDefaultThemeMode()->value)
 
@@ -145,7 +145,7 @@
         @filamentScripts(withCore: true)
 
         @if (filament()->hasBroadcasting() && config('filament.broadcasting.echo'))
-            <script data-navigate-once>
+            <script nonce="{{ \Filament\Support\csp_nonce() }}" data-navigate-once>
                 window.Echo = new window.EchoFactory(@js(config('filament.broadcasting.echo')))
 
                 window.dispatchEvent(new CustomEvent('EchoLoaded'))
@@ -153,7 +153,7 @@
         @endif
 
         @if (filament()->hasDarkMode() && (! filament()->hasDarkModeForced()))
-            <script>
+            <script nonce="{{ \Filament\Support\csp_nonce() }}">
                 loadDarkMode()
             </script>
         @endif

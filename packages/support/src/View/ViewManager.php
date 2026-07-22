@@ -25,6 +25,8 @@ class ViewManager
      */
     protected array $spaModeUrlExceptions = [];
 
+    protected string | Closure | null $cspNonce = null;
+
     /**
      * @param  string | array<string> | null  $scopes
      */
@@ -146,5 +148,18 @@ class ViewManager
     public function hasSpaPrefetching(): bool
     {
         return $this->hasSpaPrefetching;
+    }
+
+    /**
+     * @param  string | (Closure(): ?string) | null  $nonce
+     */
+    public function useCspNonce(string | Closure | null $nonce): void
+    {
+        $this->cspNonce = $nonce;
+    }
+
+    public function getCspNonce(): ?string
+    {
+        return value($this->cspNonce);
     }
 }

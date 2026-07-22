@@ -1,6 +1,7 @@
 <?php
 
 use Filament\Support\Assets\Js;
+use Filament\Support\Facades\FilamentView;
 use Filament\Tests\TestCase;
 use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Support\HtmlString;
@@ -177,5 +178,21 @@ describe('`getHtml()`', function (): void {
             ->html($htmlable);
 
         expect($js->getHtml())->toBe($htmlable);
+    });
+
+    it('does not include a `nonce` attribute when no CSP nonce is configured', function (): void {
+        $js = Js::make('script')
+            ->package('my-package');
+
+        expect($js->getHtml()->toHtml())->not->toContain('nonce=');
+    });
+
+    it('includes a `nonce` attribute when a CSP nonce is configured', function (): void {
+        FilamentView::useCspNonce('abc123');
+
+        $js = Js::make('script')
+            ->package('my-package');
+
+        expect($js->getHtml()->toHtml())->toContain('nonce="abc123"');
     });
 });

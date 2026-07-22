@@ -372,6 +372,13 @@ if (! function_exists('Filament\Support\discover_app_classes')) {
     }
 }
 
+if (! function_exists('Filament\Support\csp_nonce')) {
+    function csp_nonce(): ?string
+    {
+        return FilamentView::getCspNonce();
+    }
+}
+
 if (! function_exists('Filament\Support\get_color_css_variables')) {
     /**
      * @param  string | array{50: string, 100: string, 200: string, 300: string, 400: string, 500: string, 600: string, 700: string, 800: string, 900: string, 950: string} | null  $color
